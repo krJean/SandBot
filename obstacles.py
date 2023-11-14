@@ -1,5 +1,6 @@
 import math
 from typing import Tuple
+import matplotlib.patches as mpl_patches
 
 class Circle:
     '''
@@ -45,6 +46,16 @@ class Circle:
         # TODO: add tolerance
         return dist_from_center <= self.radius
 
+    def get_patch(self) -> mpl_patches.Circle:
+        '''Matplotlib circle patch
+
+        Returns
+        -------
+        matplotlib.patches.Circle
+            Circle patch of this Circle's dimensions and position
+        '''
+        return mpl_patches.Circle((self.x, self.y), self.radius, color='r')
+
 
 class Square:
     '''
@@ -89,3 +100,13 @@ class Square:
         # TODO: add tolerance
         return p_x >= self._min_x and p_x <= self._max_x and \
                 p_y >= self._min_y and p_y <= self._max_y
+
+    def get_patch(self) -> mpl_patches.Rectangle:
+        '''Matplotlib rectangle patch
+
+        Returns
+        -------
+        matplotlib.patches.Rectangle
+            Rectangle patch of this Square's dimensions and position
+        '''
+        return mpl_patches.Rectangle((self.x, self.y), self.side_length, self.side_length, color='r')
