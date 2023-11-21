@@ -17,7 +17,28 @@ class PathPlanner(AStar):
             leg = self.astar(w0, w1)
             for toe in leg:
                 full_path.append(toe)
-        return full_path
+        
+        # Compute angles
+        full_path_angles = []
+        def compute_angle(p0, p1):
+            dx = p1[0] - p0[0]
+            dy = p1[1] - p0[1]
+            theta = np.arctan2(dy, dx)
+            return theta
+
+
+        for i in range(len(full_path) - 1):
+            p0 = full_path[i]
+            p1 = full_path[i+1]
+            theta = compute_angle(p0, p1)
+            point = [p0[0], p1[1], theta]
+            full_path_angles.append(point)
+
+        end_theta = compute_angle(full_path[-1], waypoints[-1])
+        endpoint = [full_path[-1][0], full_path[-1][1], end_theta]
+        full_path_angles.append(endpoint)
+
+        return full_path_angles
 
     def plan_leg(self, waypoint_A, waypoint_B):
         foundpath = self.astar(waypoint_A, waypoint_B)
