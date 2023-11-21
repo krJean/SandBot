@@ -113,13 +113,9 @@ def main():
     show(cost_map=cost_map, sandbox=sandbox)
 
     import pathPlanner
-
     planner = pathPlanner.PathPlanner(cost_map)
     waypoints = sandbox["way_points"]
-    w0 = tuple(waypoints[0])
-    w1 = tuple(waypoints[1])
-
-    trajectory = planner.plan_leg(w0, w1)
+    trajectory = planner.plan_path(waypoints)
     print(trajectory)
 
 

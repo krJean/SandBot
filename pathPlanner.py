@@ -10,9 +10,14 @@ class PathPlanner(AStar):
         self.max_x, self.max_y = self.costmap.shape[0:]
 
     def plan_path(self, waypoints):
-        for i in range(len(waypoints)):
-            self.astar()
-        pass
+        full_path = []
+        for i in range(len(waypoints) - 1):
+            w0 = tuple(waypoints[i])
+            w1 = tuple(waypoints[i+1])
+            leg = self.astar(w0, w1)
+            for toe in leg:
+                full_path.append(toe)
+        return full_path
 
     def plan_leg(self, waypoint_A, waypoint_B):
         foundpath = self.astar(waypoint_A, waypoint_B)
@@ -34,19 +39,25 @@ class PathPlanner(AStar):
         for n in neighbors:
             if n[0] < 0 or n[0] >= self.max_x:
                 to_remove.append(n)
+                continue
             if n[1] < 0 or n[1] >= self.max_y:
                 to_remove.append(n)
+                
         for n in to_remove:
             neighbors.remove(n)
 
         return neighbors
 
     def distance_between(self, n1, n2):
-        d = abs(n1[0] - n2[0]) + abs(n1[1] - n2[1])
-        return d
+        # d = abs(n1[0] - n2[0]) + abs(n1[1] - n2[1])
+        d = (n1[0] - n2[0])**2 + (n1[1] - n2[1])**2
+        return 1
 
     def heuristic_cost_estimate(self, current, goal):
-        return self.costmap[current[0], current[1]]
+        #cost = self.costmap[current[0], current[1]] + self.distance_between(current, goal)
+        cost = self.costmap[current[0], current[1]]# + self.distance_between(current, goal)
+        print(f"cost at {current[0]},{current[1]}: {cost}")
+        return cost
 
     def is_goal_reached(self, current, goal):
         if current[0] == goal[0] and current[1] == goal[1]:
