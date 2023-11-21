@@ -1,6 +1,31 @@
 import math
-from typing import Tuple
+from typing import List, Tuple
 import matplotlib.patches as mpl_patches
+
+def parse_obstacles(json_obs_list:List[dict]) -> List:
+    '''JSON parser for sandbox obstacles
+
+    Parameters
+    ----------
+    json_obs_list : List[dict]
+        List of obstacles configuration dictionaries
+
+    Returns
+    -------
+    List
+        List of obstacles as shape objects (circle or square)
+    '''
+    obs_list = []
+    for obs in json_obs_list:
+        shape = list(obs.keys())[0]
+        vals = list(obs.values())[0]
+        if shape == 'circle':
+            obs_list.append(Circle(center=vals['center'],radius=vals['radius']))
+        elif shape == 'square':
+            obs_list.append(Square(center=vals['center'],side_length=vals['side_length']))
+        else:
+            raise Exception(f'No implementation for obstacle of shape {list(obs.keys())}')
+    return obs_list
 
 class Circle:
     '''
