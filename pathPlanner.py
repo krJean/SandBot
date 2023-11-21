@@ -15,12 +15,16 @@ class PathPlanner(AStar):
             w0 = tuple(waypoints[i])
             w1 = tuple(waypoints[i+1])
             leg = self.astar(w0, w1)
+            if leg is None:
+                raise Exception('You ain\'t got no legs, Lieutenant Dan!')
             for toe in leg:
                 full_path.append(toe)
         return full_path
 
     def plan_leg(self, waypoint_A, waypoint_B):
         foundpath = self.astar(waypoint_A, waypoint_B)
+        if foundpath is None:
+            raise Exception('You ain\'t got no foundpath, Lieutenant Dan!')
         return list(foundpath)
 
     def neighbors(self, node):

@@ -6,6 +6,8 @@ import sys
 from typing import List, Optional, Tuple, Union
 
 from obstacles import Circle, Square, parse_obstacles
+from pathPlanner import PathPlanner
+from trajectory import Trajectory
 
 def get_sandbox_plot(sandbox: dict) -> matplotlib.axes.Axes:
     '''Matplotlib axes with sandbox objects and waypoints plotted
@@ -91,7 +93,7 @@ def make_cost_map(sandbox:dict) -> np.ndarray:
     return cost_map
 
 
-def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None):
+def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None, path:Optional[Trajectory]=None):
     '''Wrapper to show multiple representations of the sandbox
 
     Parameters
@@ -100,23 +102,27 @@ def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None):
         2D array of obstacle cost, by default None
     sandbox : Optional[dict], optional
         Dictionary of sandbox configuration, by default None
+    path : Optional[Trajectory], optional
+        Path of rake through sandbox, by default None
     '''
     if sandbox is not None:
         _ = get_sandbox_plot(sandbox)
     if cost_map is not None:
-        _ = plt.imshow(cost_map.T, origin='lower')
+        _ = plt.gca().imshow(cost_map.T, origin='lower')
+    if path is not None:
+        _ = plt.gca().plot(path.x,path.y,'-g.')
     plt.show()
 
 def main():
     sandbox = read_sandbox(sys.argv[1])
     cost_map = make_cost_map(sandbox)
-    show(cost_map=cost_map, sandbox=sandbox)
 
-    import pathPlanner
-    planner = pathPlanner.PathPlanner(cost_map)
-    waypoints = sandbox["way_points"]
-    trajectory = planner.plan_path(waypoints)
+    planner = PathPlanner(cost_map)
+    waypoints = sandbox['way_points']
+    trajectory = Trajectory(coord_path=planner.plan_path(waypoints))
+
     print(trajectory)
+    show(cost_map=cost_map, sandbox=sandbox, path=trajectory)
 
 
 
