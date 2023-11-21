@@ -1,0 +1,16 @@
+{
+    "box_width": 50,
+    "box_length": 50,
+    "obstacles": [
+        {
+            "circle":{
+                "center": [25,25],
+                "radius": 10
+            }
+        }
+    ],
+    "way_points": [
+        [10,25],
+        [40,25]
+    ]
+}
