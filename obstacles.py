@@ -134,4 +134,4 @@ class Square:
         matplotlib.patches.Rectangle
             Rectangle patch of this Square's dimensions and position
         '''
-        return mpl_patches.Rectangle((self.x, self.y), self.side_length, self.side_length, color='r')
+        return mpl_patches.Rectangle((self._min_x, self._min_y), self.side_length, self.side_length, color='r')
