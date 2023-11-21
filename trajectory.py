@@ -1,4 +1,45 @@
-from typing import List
+from typing import List, Optional, Tuple
+
+class Pose:
+    '''
+    Position and orientation represented in cartesian coordinates
+
+    Parameters
+    ----------
+    x : float
+        x coordinate of pose
+    y : float
+        y coordinate of pose
+    theta : float
+        rotation (orientation) of pose in radians wrt positive x-axis
+    '''
+
+    _x: float
+    _y: float
+    _theta: float
+
+    def __init__(self,
+                    x:float,
+                    y:float,
+                    theta:float):
+        self._x = x
+        self._y = y
+        self._theta = theta
+
+    def __repr__(self):
+        return f'[{self.x},{self.y},{self.theta}]'
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def theta(self):
+        return self._theta
 
 class Trajectory:
     '''Container for path represented by a list of Pose objects
@@ -9,50 +50,17 @@ class Trajectory:
         Path representation
     '''
 
+    path: List[Pose]
 
-    class Pose:
-        '''
-        Position and orientation represented in cartesian coordinates
-
-        Parameters
-        ----------
-        x : float
-            x coordinate of pose
-        y : float
-            y coordinate of pose
-        theta : float
-            rotation (orientation) of pose in radians wrt positive x-axis
-        '''
-
-        _x: float
-        _y: float
-        _theta: float
-
-        def __init__(self,
-                     x:float,
-                     y:float,
-                     theta:float):
-            self._x = x
-            self._y = y
-            self._theta = theta
-
-        def __repr__(self):
-            return f'[{self.x},{self.y},{self.theta}]'
-
-        @property
-        def x(self):
-            return self._x
-
-        @property
-        def y(self):
-            return self._y
-
-        @property
-        def theta(self):
-            return self._theta
-
-    def __init__(self, path:List[Pose] = []):
-        self.path = path
+    def __init__(self,
+                 pose_path:Optional[List[Pose]]=None,
+                 coord_path:Optional[List[Tuple[float,float]]]=None):
+        if pose_path is not None:
+            self.path = pose_path
+        elif coord_path is not None:
+            self.path = [Pose(coord[0], coord[1], 0) for coord in coord_path]
+        else:
+            self.path = []
 
     def __repr__(self):
         return '\n'.join([str(p) for p in self.path])
@@ -73,5 +81,5 @@ class Trajectory:
         return [p.theta for p in self.path]
 
 if __name__ == '__main__':
-    path = Trajectory([Trajectory.Pose(e,-e, e/3.14159) for e in range(50)])
+    path = Trajectory(pose_path = [Pose(e,-e, e/3.14159) for e in range(50)])
     print(path)
