@@ -49,7 +49,7 @@ def read_sandbox(config_path:str) -> dict:
     return config
 
 
-def is_collision(point:Tuple[float,float], obstacles:List[Union[Circle, Square]]) -> bool:
+def is_collision(point:Tuple[float,float], obstacles:List[Union[Circle, Square]], bloat:float=0.) -> bool:
     '''Test if given point is inside an obstacle
 
     Parameters
@@ -58,6 +58,9 @@ def is_collision(point:Tuple[float,float], obstacles:List[Union[Circle, Square]]
         Coordinate to check
     obstacles : List[Union[Circle, Square]]
         Obstacles of potential collision
+    bloat : float
+        Distance from obstacle edge that's still "out-of-bounds",
+        by default 0.0
 
     Returns
     -------
@@ -65,7 +68,7 @@ def is_collision(point:Tuple[float,float], obstacles:List[Union[Circle, Square]]
         True if given point is inside one of the obstacles
     '''
     for i, obs in enumerate(obstacles):
-        if obs.is_inside(point):
+        if obs.is_inside(point, bloat):
             return True
     return False
 
@@ -88,12 +91,15 @@ def make_cost_map(sandbox:dict) -> np.ndarray:
     # This could be more efficient if the shapes could return what coords they cover instead...
     for i in range(sandbox['box_width']):
         for j in range(sandbox['box_length']):
-            if is_collision((i,j), sandbox['obstacles']):
+            if is_collision((i,j), sandbox['obstacles'], bloat=sandbox['rake_width']/2):
                 cost_map[i,j] = 1.
     return cost_map
 
 
-def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None, path:Optional[Trajectory]=None):
+def show(cost_map:Optional[np.ndarray]=None,
+         sandbox:Optional[dict]=None,
+         path:Optional[Trajectory]=None,
+         draw_rake:bool=True):
     '''Wrapper to show multiple representations of the sandbox
 
     Parameters
@@ -104,6 +110,9 @@ def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None, path:O
         Dictionary of sandbox configuration, by default None
     path : Optional[Trajectory], optional
         Path of rake through sandbox, by default None
+    draw_rake : bool
+        If True, draw a line to represent the rake facing
+        the x-axis at the first waypoint, by default False
     '''
     if sandbox is not None:
         _ = get_sandbox_plot(sandbox)
@@ -111,6 +120,13 @@ def show(cost_map:Optional[np.ndarray]=None, sandbox:Optional[dict]=None, path:O
         _ = plt.gca().imshow(cost_map.T, origin='lower')
     if path is not None:
         _ = plt.gca().plot(path.x,path.y,'-g.')
+    # TODO: Add rake rotation if it's available
+    if draw_rake and sandbox:
+        half_width = sandbox['rake_width']/2
+        first_point = sandbox['way_points'][0]
+        _ = plt.gca().plot([first_point[0]-half_width,
+                            first_point[0]+half_width],
+                            [first_point[1], first_point[1]])
     plt.show()
 
 def main():

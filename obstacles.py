@@ -52,13 +52,16 @@ class Circle:
         self._min_y = self.y - self.radius
         self._max_y = self.y + self.radius
 
-    def is_inside(self, point:Tuple[float,float]):
-        '''Determine if point lies inside the circle.
+    def is_inside(self, point:Tuple[float,float], bloat:float=0.):
+        '''Determine if point lies inside the circle with some bloat bounds.
 
         Parameters
         ----------
         point : Tuple[float,float]
             x y coordinates of point to check
+        bloat : float
+            Distance from obstacle edge that's still "out-of-bounds",
+            by default 0.0
 
         Returns
         -------
@@ -69,7 +72,7 @@ class Circle:
         dist_from_center = math.sqrt( (p_x-self.x)**2 + (p_y-self.y)**2 )
 
         # TODO: add tolerance
-        return dist_from_center <= self.radius
+        return dist_from_center <= self.radius+bloat
 
     def get_patch(self) -> mpl_patches.Circle:
         '''Matplotlib circle patch
@@ -108,13 +111,16 @@ class Square:
         self._min_y = self.y-self._half_length
         self._max_y = self.y+self._half_length
 
-    def is_inside(self, point:Tuple[float,float]):
-        '''Determine if point lies inside the square.
+    def is_inside(self, point:Tuple[float,float], bloat:float=0.):
+        '''Determine if point lies inside the square with some bloat bounds.
 
         Parameters
         ----------
         point : Tuple[float,float]
             x y coordinates of point to check
+        bloat : float
+            Distance from obstacle edge that's still "out-of-bounds",
+            by default 0.0
 
         Returns
         -------
@@ -122,9 +128,28 @@ class Square:
             True if point lies inside the square
         '''
         p_x, p_y = point
+        bloat_min_x = self._min_x - bloat
+        bloat_min_y = self._min_y - bloat
+        bloat_max_x = self._max_x + bloat
+        bloat_max_y = self._max_y + bloat
+
         # TODO: add tolerance
-        return p_x >= self._min_x and p_x <= self._max_x and \
-                p_y >= self._min_y and p_y <= self._max_y
+        # Covers square and rectangular bloat sections on the sides
+        if (self._min_x <= p_x <= self._max_x and
+            bloat_min_y <= p_y <= bloat_max_y) or \
+           (bloat_min_x <= p_x <= bloat_max_x and
+            self._min_y <= p_y <= self._max_y):
+            return True
+
+        # Covers rounded corners from bloat
+        for c_x, c_y in [(self._min_x,self._min_y),
+                       (self._min_x,self._max_y),
+                       (self._max_x,self._min_y),
+                       (self._max_x,self._max_y)]:
+            if math.sqrt( (p_x-c_x)**2 + (p_y-c_y)**2 ) <= bloat:
+                return True
+
+        return False
 
     def get_patch(self) -> mpl_patches.Rectangle:
         '''Matplotlib rectangle patch
