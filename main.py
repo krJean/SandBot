@@ -120,6 +120,10 @@ def show(cost_map:Optional[np.ndarray]=None,
     if cost_map is not None:
         _ = plt.gca().imshow(cost_map.T, origin='lower')
     if path is not None:
+        # n = len(path.x)-1
+        # colors = plt.cm.rainbow(np.linspace(0, 1, n))
+        # for i in range(n):
+        #     _ = plt.gca().plot([path.x[i],path.x[i+1]],[path.y[i],path.y[i+1]],'-.',color=colors[i])
         _ = plt.gca().plot(path.x,path.y,'-g.')
     # TODO: Add rake rotation if it's available
     if draw_rake and sandbox:

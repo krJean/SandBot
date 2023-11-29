@@ -1,4 +1,3 @@
-from turtle import pos
 import numpy as np
 from scipy.ndimage.morphology import distance_transform_edt
 import matplotlib.pyplot as plt
