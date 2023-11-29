@@ -3,6 +3,7 @@
 
 from astar import AStar
 import numpy as np
+from trajectory import *
 
 class PathPlanner(AStar):
     def __init__(self, costmap):
@@ -11,7 +12,9 @@ class PathPlanner(AStar):
 
     def plan_path(self, waypoints):
         full_path = []
+        legs = []
         for i in range(len(waypoints) - 1):
+            full_path = []
             w0 = tuple(waypoints[i])
             w1 = tuple(waypoints[i+1])
             leg = self.astar(w0, w1)
@@ -20,6 +23,9 @@ class PathPlanner(AStar):
             for toe in leg:
                 #full_path.append(toe)
                 full_path.append([toe[0], toe[1], 0])
+            traj = Trajectory(coord_path=np.array(full_path))
+            legs.append(traj)
+            
         # print("n_points:", len(full_path))
         # return full_path
         
@@ -44,7 +50,8 @@ class PathPlanner(AStar):
         full_path_angles.append(endpoint)
         print("n_points:", len(full_path_angles))
 
-        return full_path_angles
+        #return full_path_angles
+        return Path(legs)
 
     def plan_leg(self, waypoint_A, waypoint_B):
         foundpath = self.astar(waypoint_A, waypoint_B)

@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, Union
 
 from obstacles import Circle, Square, parse_obstacles
 from pathPlanner import PathPlanner
-from trajectory import Trajectory
+from trajectory import Trajectory, Path
 from trajectoryOptimizer import TrajectoryOptimizer
 
 def get_sandbox_plot(sandbox: dict) -> matplotlib.axes.Axes:
@@ -136,18 +136,17 @@ def main():
 
     planner = PathPlanner(cost_map)
     waypoints = sandbox['way_points']
-    trajectory = Trajectory(coord_path=planner.plan_path(waypoints))
+    path = planner.plan_path(waypoints)
 
     # Optimize trajectory
-    optimizer = TrajectoryOptimizer(sandbox['obstacles'])
-    opt_trajectory_array = optimizer.optimize(trajectory, None)
-    opt_trajectory = Trajectory(coord_path=opt_trajectory_array)
+    optimizer = TrajectoryOptimizer(sandbox['obstacles'], sandbox['rake_width'])
+    opt_path= optimizer.optimize_path(path)
 
-    print(trajectory)
-    show(cost_map=cost_map, sandbox=sandbox, path=trajectory)
+    print(path)
+    show(cost_map=cost_map, sandbox=sandbox, path=path)
 
-    print(opt_trajectory)
-    show(cost_map=cost_map, sandbox=sandbox, path=opt_trajectory)
+    print(opt_path)
+    show(cost_map=cost_map, sandbox=sandbox, path=opt_path)
 
 
 

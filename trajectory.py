@@ -85,6 +85,19 @@ class Trajectory:
     def array(self):
         return np.column_stack([self.x, self.y, self.theta], )
 
+    
+class Path:
+    def __init__(self, legs: Optional[List[Trajectory]]=None):
+        self.legs = legs
+
+    @property
+    def x(self):
+        return np.concatenate([leg.x for leg in self.legs])
+
+    @property
+    def y(self):
+        return np.concatenate([leg.y for leg in self.legs])
+
 if __name__ == '__main__':
     path = Trajectory(pose_path = [Pose(e,-e, e/3.14159) for e in range(50)])
     print(path)
