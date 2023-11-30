@@ -10,6 +10,7 @@ class PathPlanner(AStar):
         self.costmap = costmap
         self.max_x, self.max_y = self.costmap.shape[0:]
         self.last_node = [-1,-1]
+        self.last_last_node = [-1,-1]
 
     def plan_path(self, waypoints):
         full_path = []
@@ -23,9 +24,11 @@ class PathPlanner(AStar):
                 raise Exception('You ain\'t got no legs, Lieutenant Dan!')
             for toe in leg:
                 full_path.append([toe[0], toe[1], 0])
+                self.last_last_node = self.last_node
+                self.last_node = toe
             traj = Trajectory(coord_path=np.array(full_path))
             legs.append(traj)
-            
+
         # print("n_points:", len(full_path))
         # return full_path
         
@@ -64,6 +67,11 @@ class PathPlanner(AStar):
         direction = (node[0]-self.last_node[0],
                         node[1]-self.last_node[1])
         if self.last_node != [-1,-1] and abs(direction[0]) <= 1 and abs(direction[1]) <= 1:
+            # If the most recent node equals the node we're on,
+            # check the next most recent node for direction
+            if direction[0] == 0 and direction[1] == 0:
+                direction = (node[0]-self.last_last_node[0],
+                        node[1]-self.last_last_node[1])
             forward = (node[0]+direction[0],
                         node[1]+direction[1])
             if direction[0] == 0:
@@ -90,6 +98,7 @@ class PathPlanner(AStar):
                 (node[0] + 1, node[1]),
                 (node[0] + 1, node[1] + 1),
             ]
+        self.last_last_node = self.last_node
         self.last_node = node
         to_remove = []
         for n in neighbors:
