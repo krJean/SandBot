@@ -1,0 +1,38 @@
+{
+    "box_width": 100,
+    "box_length": 100,
+    "obstacles": [
+        {
+            "circle":{
+                "center": [25,30],
+                "radius": 10
+            }
+        },
+        {
+            "circle":{
+                "center": [25,60],
+                "radius": 10
+            }
+        },
+        {
+            "circle":{
+                "center": [50,50],
+                "radius": 10
+            }
+        },
+        {
+            "circle":{
+                "center": [85,65],
+                "radius": 10
+            }
+        }
+    ],
+    "way_points": [
+        [15,15],
+        [85,85],
+        [85,15],
+        [15,85],
+        [15,15]
+    ],
+    "rake_width": 9
+}

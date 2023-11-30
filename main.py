@@ -7,7 +7,8 @@ from typing import List, Optional, Tuple, Union
 
 from obstacles import Circle, Square, parse_obstacles
 from pathPlanner import PathPlanner
-from trajectory import Trajectory
+from trajectory import Trajectory, Path
+from trajectoryOptimizer import TrajectoryOptimizer
 
 def get_sandbox_plot(sandbox: dict) -> matplotlib.axes.Axes:
     '''Matplotlib axes with sandbox objects and waypoints plotted
@@ -119,6 +120,10 @@ def show(cost_map:Optional[np.ndarray]=None,
     if cost_map is not None:
         _ = plt.gca().imshow(cost_map.T, origin='lower')
     if path is not None:
+        # n = len(path.x)-1
+        # colors = plt.cm.rainbow(np.linspace(0, 1, n))
+        # for i in range(n):
+        #     _ = plt.gca().plot([path.x[i],path.x[i+1]],[path.y[i],path.y[i+1]],'-.',color=colors[i])
         _ = plt.gca().plot(path.x,path.y,'-g.')
     # TODO: Add rake rotation if it's available
     if draw_rake and sandbox:
@@ -135,10 +140,17 @@ def main():
 
     planner = PathPlanner(cost_map)
     waypoints = sandbox['way_points']
-    trajectory = Trajectory(coord_path=planner.plan_path(waypoints))
+    path = planner.plan_path(waypoints)
 
-    print(trajectory)
-    show(cost_map=cost_map, sandbox=sandbox, path=trajectory)
+    # Optimize trajectory
+    optimizer = TrajectoryOptimizer(sandbox['obstacles'], sandbox['rake_width'])
+    opt_path= optimizer.optimize_path(path)
+
+    print(path)
+    show(cost_map=cost_map, sandbox=sandbox, path=path)
+
+    print(opt_path)
+    show(cost_map=cost_map, sandbox=sandbox, path=opt_path)
 
 
 

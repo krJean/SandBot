@@ -3,23 +3,32 @@
 
 from astar import AStar
 import numpy as np
+from trajectory import *
 
 class PathPlanner(AStar):
     def __init__(self, costmap):
         self.costmap = costmap
         self.max_x, self.max_y = self.costmap.shape[0:]
+        self.last_node = [-1,-1]
+        self.last_last_node = [-1,-1]
 
     def plan_path(self, waypoints):
         full_path = []
+        legs = []
         for i in range(len(waypoints) - 1):
+            full_path = []
             w0 = tuple(waypoints[i])
             w1 = tuple(waypoints[i+1])
             leg = self.astar(w0, w1)
             if leg is None:
                 raise Exception('You ain\'t got no legs, Lieutenant Dan!')
             for toe in leg:
-                #full_path.append(toe)
                 full_path.append([toe[0], toe[1], 0])
+                self.last_last_node = self.last_node
+                self.last_node = toe
+            traj = Trajectory(coord_path=np.array(full_path))
+            legs.append(traj)
+
         # print("n_points:", len(full_path))
         # return full_path
         
@@ -42,28 +51,55 @@ class PathPlanner(AStar):
         end_theta = compute_angle(full_path[-1], waypoints[-1])
         endpoint = [full_path[-1][0], full_path[-1][1], end_theta]
         full_path_angles.append(endpoint)
-        print("n_points:", len(full_path_angles))
+        # print("n_points:", len(full_path_angles))
 
-        return full_path_angles
+        #return full_path_angles
+        return Path(legs)
 
     def plan_leg(self, waypoint_A, waypoint_B):
         foundpath = self.astar(waypoint_A, waypoint_B)
+        self.last_node = [-1,-1]
         if foundpath is None:
             raise Exception('You ain\'t got no foundpath, Lieutenant Dan!')
         return list(foundpath)
 
     def neighbors(self, node):
-        # return 8-neighbors of a cell
-        neighbors = [
-            (node[0] - 1, node[1] - 1),
-            (node[0] - 1, node[1]),
-            (node[0] - 1, node[1] + 1),
-            (node[0], node[1] - 1),
-            (node[0], node[1] + 1),
-            (node[0] + 1, node[1] - 1),
-            (node[0] + 1, node[1]),
-            (node[0] + 1, node[1] + 1),
-        ]
+        direction = (node[0]-self.last_node[0],
+                        node[1]-self.last_node[1])
+        if self.last_node != [-1,-1] and abs(direction[0]) <= 1 and abs(direction[1]) <= 1:
+            # If the most recent node equals the node we're on,
+            # check the next most recent node for direction
+            if direction[0] == 0 and direction[1] == 0:
+                direction = (node[0]-self.last_last_node[0],
+                        node[1]-self.last_last_node[1])
+            forward = (node[0]+direction[0],
+                        node[1]+direction[1])
+            if direction[0] == 0:
+                left  = (forward[0]-1,forward[1])
+                right = (forward[0]+1,forward[1])
+            elif direction[1] == 0:
+                left  = (forward[0],forward[1]-1)
+                right = (forward[0],forward[1]+1)
+            else:
+                left  = (forward[0],forward[1]+direction[1])
+                right = (forward[0]+direction[0],forward[1])
+            neighbors = [forward,
+                        left,
+                        right]
+        else:
+            # return 8-neighbors of a cell
+            neighbors = [
+                (node[0] - 1, node[1] - 1),
+                (node[0] - 1, node[1]),
+                (node[0] - 1, node[1] + 1),
+                (node[0], node[1] - 1),
+                (node[0], node[1] + 1),
+                (node[0] + 1, node[1] - 1),
+                (node[0] + 1, node[1]),
+                (node[0] + 1, node[1] + 1),
+            ]
+        self.last_last_node = self.last_node
+        self.last_node = node
         to_remove = []
         for n in neighbors:
             if n[0] < 0 or n[0] >= self.max_x:
@@ -92,7 +128,7 @@ class PathPlanner(AStar):
         #cost = self.costmap[current[0], current[1]] + self.distance_between(current, goal)
         cost = self.costmap[current[0], current[1]] * 100 + self.dist(current, goal)
         #cost = self.costmap[current[0], current[1]] # Correct
-        print(f"cost at {current[0]},{current[1]}: {cost}")
+        # print(f"cost at {current[0]},{current[1]}: {cost}")
         return cost
 
     def is_goal_reached(self, current, goal):
