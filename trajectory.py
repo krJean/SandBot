@@ -98,6 +98,10 @@ class Path:
     def y(self):
         return np.concatenate([leg.y for leg in self.legs])
 
+    @property
+    def theta(self):
+        return np.concatenate([leg.theta for leg in self.legs])
+
 if __name__ == '__main__':
     path = Trajectory(pose_path = [Pose(e,-e, e/3.14159) for e in range(50)])
     print(path)

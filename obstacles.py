@@ -74,7 +74,7 @@ class Circle:
         # TODO: add tolerance
         return dist_from_center <= self.radius+bloat
 
-    def get_patch(self) -> mpl_patches.Circle:
+    def get_patch(self, color='r') -> mpl_patches.Circle:
         '''Matplotlib circle patch
 
         Returns
@@ -82,7 +82,7 @@ class Circle:
         matplotlib.patches.Circle
             Circle patch of this Circle's dimensions and position
         '''
-        return mpl_patches.Circle((self.x, self.y), self.radius, color='r')
+        return mpl_patches.Circle((self.x, self.y), self.radius, color=color)
 
 
 class Square:
@@ -151,7 +151,7 @@ class Square:
 
         return False
 
-    def get_patch(self) -> mpl_patches.Rectangle:
+    def get_patch(self, color='r') -> mpl_patches.Rectangle:
         '''Matplotlib rectangle patch
 
         Returns
@@ -159,4 +159,4 @@ class Square:
         matplotlib.patches.Rectangle
             Rectangle patch of this Square's dimensions and position
         '''
-        return mpl_patches.Rectangle((self._min_x, self._min_y), self.side_length, self.side_length, color='r')
+        return mpl_patches.Rectangle((self._min_x, self._min_y), self.side_length, self.side_length, color=color)

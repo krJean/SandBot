@@ -1,4 +1,5 @@
 import json
+# import pickle
 import matplotlib.axes
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +10,7 @@ from obstacles import Circle, Square, parse_obstacles
 from pathPlanner import PathPlanner
 from trajectory import Trajectory, Path
 from trajectoryOptimizer import TrajectoryOptimizer
+from plot_sandbox import plot_sandbox
 
 def get_sandbox_plot(sandbox: dict) -> matplotlib.axes.Axes:
     '''Matplotlib axes with sandbox objects and waypoints plotted
@@ -152,6 +154,11 @@ def main():
     print(opt_path)
     show(cost_map=cost_map, sandbox=sandbox, path=opt_path)
 
+    path_list = [[opt_path.x[i], opt_path.y[i], opt_path.theta[i]] for i in range(len(opt_path.x))]
+    plot_sandbox(sandbox, path_list, num_tines=5, gradient=False)
+
+    # with open('data.pickle', 'wb') as f:\
+    #     pickle.dump(path_list, f, pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == '__main__':
