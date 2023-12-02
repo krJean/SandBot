@@ -18,9 +18,9 @@ def plot_sandbox(sandbox: dict, path:list, num_tines:int=5, gradient:bool=False)
 
     # Plot obstacles
     for obs in sandbox['obstacles']:
-        ax.add_patch(obs.get_patch(OBSTACLE_COLOR))
+        ax.add_patch(obs.get_patch(ax, OBSTACLE_COLOR))
 
-    path_no_dups = [k for k,_ in groupby(path) if k!=0]
+    path_no_dups = [k for k,_ in groupby(path)]
 
     px = np.array([p[0] for p in path_no_dups])
     py = np.array([p[1] for p in path_no_dups])

@@ -19,7 +19,8 @@ class TrajectoryOptimizer():
         '''
         grad = np.array([0., 0., 0.])
         for obstacle in self.obstacles:
-            if isinstance(obstacle, Circle):
+            # if isinstance(obstacle, Circle):
+            if True:
                 # cost based on radius and distance
                 # d = pi r^2
 
@@ -30,9 +31,9 @@ class TrajectoryOptimizer():
                     grad_vec = [2*dx, 2*dy, 0]
                     grad[:] +=  grad_vec / np.linalg.norm(grad_vec)
 
-            if isinstance(obstacle, Square):
-                # cost based on radius and distance
-                raise KeyError("Rectangle not supported in obstacle gradient yet!")
+            # if isinstance(obstacle, Square):
+            #     # cost based on radius and distance
+            #     raise KeyError("Rectangle not supported in obstacle gradient yet!")
         return grad
 
     def smoothness_gradient(self, trajectory):
@@ -104,7 +105,8 @@ class TrajectoryOptimizer():
             if debug:
                 print("obstacle grads:", obstacle_grads)
                 print("smoothness grad:", smoothness_grad)
-            total_grad = 0.5 * obstacle_grads + 4 * smoothness_grad
+            # total_grad = 0.5 * obstacle_grads + 4 * smoothness_grad
+            total_grad = 1 * obstacle_grads + 4 * smoothness_grad
 
             # total_grad = 0.8 * grad + 4 * smoothness_grad2
 

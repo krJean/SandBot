@@ -26,7 +26,7 @@ def get_sandbox_plot(sandbox: dict) -> matplotlib.axes.Axes:
     plt.axis('scaled')
 
     for obs in sandbox['obstacles']:
-        ax.add_patch(obs.get_patch())
+        ax.add_patch(obs.get_patch(ax))
 
     for wp in sandbox['way_points']:
         ax.scatter([wp[0]], [wp[1]], color='b')
@@ -155,7 +155,7 @@ def main():
     show(cost_map=cost_map, sandbox=sandbox, path=opt_path)
 
     path_list = [[opt_path.x[i], opt_path.y[i], opt_path.theta[i]] for i in range(len(opt_path.x))]
-    plot_sandbox(sandbox, path_list, num_tines=5, gradient=False)
+    plot_sandbox(sandbox, path_list, num_tines=10, gradient=False)
 
     # with open('data.pickle', 'wb') as f:\
     #     pickle.dump(path_list, f, pickle.HIGHEST_PROTOCOL)

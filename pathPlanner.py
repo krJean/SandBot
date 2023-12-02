@@ -77,15 +77,24 @@ class PathPlanner(AStar):
             if direction[0] == 0:
                 left  = (forward[0]-1,forward[1])
                 right = (forward[0]+1,forward[1])
+                # up    = (node[0]-1, node[1])
+                # down  = (node[0]+1, node[1])
             elif direction[1] == 0:
                 left  = (forward[0],forward[1]-1)
                 right = (forward[0],forward[1]+1)
+                # up    = (node[0], node[1]-1)
+                # down  = (node[0], node[1]+1)
             else:
-                left  = (forward[0],forward[1]+direction[1])
-                right = (forward[0]+direction[0],forward[1])
+                left  = (forward[0],forward[1]-direction[1])
+                right = (forward[0]-direction[0],forward[1])
+                # up    = (-forward[0], forward[1])
+                # down  = (forward[0], -forward[1])
             neighbors = [forward,
                         left,
-                        right]
+                        right,
+                        # up,
+                        # down
+                        ]
         else:
             # return 8-neighbors of a cell
             neighbors = [
